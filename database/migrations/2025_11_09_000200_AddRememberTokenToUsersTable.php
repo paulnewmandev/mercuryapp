@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Agrega soporte para "Recordarme" incorporando la columna remember_token.
+     *
+     * @return void
+     */
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table): void {
+            if (! Schema::hasColumn('users', 'remember_token')) {
+                $table->rememberToken()->nullable()->after('email_verified_at');
+            }
+        });
+    }
+
+    /**
+     * Revierte la migración eliminando la columna remember_token.
+     *
+     * @return void
+     */
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table): void {
+            if (Schema::hasColumn('users', 'remember_token')) {
+                $table->dropColumn('remember_token');
+            }
+        });
+    }
+};
+

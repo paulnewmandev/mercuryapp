@@ -1,0 +1,73 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MercuryApp 1.0\n"
+"Report-Msgid-Bugs-To: support@mercuryapp.io\n"
+"Last-Translator: MercuryApp Team <support@mercuryapp.io>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Welcome back to MercuryApp"
+msgstr "Welcome back to MercuryApp"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Remember me"
+msgstr "Remember me"
+
+msgid "Sign in"
+msgstr "Sign in"
+
+msgid "Forgot your password?"
+msgstr "Forgot your password?"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Open repair orders"
+msgstr "Open repair orders"
+
+msgid "Average turnaround time"
+msgstr "Average turnaround time"
+
+msgid "Pending invoices"
+msgstr "Pending invoices"
+
+msgid "Active technicians"
+msgstr "Active technicians"
+
+msgid "Create service order"
+msgstr "Create service order"
+
+msgid "Latest tickets"
+msgstr "Latest tickets"
+
+msgid "Ticket ID"
+msgstr "Ticket ID"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Customer"
+msgstr "Customer"
+
+msgid "Device"
+msgstr "Device"
+
+msgid "Updated"
+msgstr "Updated"
+
+msgid "View all"
+msgstr "View all"
+
+
