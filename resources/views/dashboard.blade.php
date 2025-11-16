@@ -18,7 +18,7 @@
         {{-- Cards de totales --}}
         <div class="grid grid-cols-4 gap-4">
             @foreach ($cards ?? [] as $card)
-                <article class="rounded-2xl bg-linear-to-br from-purple-500/80 to-indigo-600/90 p-5 text-white shadow-lg shadow-slate-900/10">
+                <article class="rounded-2xl bg-gradient-to-br from-purple-500/80 to-indigo-600/90 p-5 text-white shadow-lg shadow-slate-900/10">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-wider text-white/80">{{ $card['label'] }}</p>
@@ -36,7 +36,7 @@
         {{-- Gráficos de Ingresos y Egresos --}}
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {{-- Gráfico de Ingresos --}}
-            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                 <div class="mb-4 flex items-center justify-between">
                     <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">{{ gettext('Ingresos por Mes') }}</h3>
                     <div class="text-sm font-semibold text-green-600 dark:text-green-400">
@@ -49,7 +49,7 @@
             </div>
 
             {{-- Gráfico de Egresos --}}
-            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                 <div class="mb-4 flex items-center justify-between">
                     <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">{{ gettext('Egresos por Mes') }}</h3>
                     <div class="text-sm font-semibold text-red-600 dark:text-red-400">
@@ -64,7 +64,7 @@
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {{-- Últimas Órdenes de Trabajo --}}
-            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="mb-4 text-base font-semibold text-gray-800 dark:text-white/90">{{ gettext('Últimas Órdenes de Trabajo') }}</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs">
@@ -86,7 +86,7 @@
             </div>
 
             {{-- Últimas Ventas --}}
-            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="mb-4 text-base font-semibold text-gray-800 dark:text-white/90">{{ gettext('Últimas Ventas') }}</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs">
@@ -108,7 +108,7 @@
             </div>
 
             {{-- Próximas Entregas --}}
-            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="mb-4 text-base font-semibold text-gray-800 dark:text-white/90">{{ gettext('Próximas Entregas') }}</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs">
