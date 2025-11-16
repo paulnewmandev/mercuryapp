@@ -18,33 +18,33 @@
                         <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                             {{ gettext('Cliente') }} <span class="text-rose-500">*</span>
                         </label>
-                        <div class="relative" data-order-customer>
-                            <div class="flex w-full items-center gap-3 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white">
-                                <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
-                                <input
-                                    type="search"
-                                    class="flex-1 border-none bg-transparent outline-none"
-                                    placeholder="{{ gettext('Buscar por nombre o documento') }}"
-                                    autocomplete="off"
-                                    data-order-customer-search
-                                    value="{{ $order->customer?->display_name ?? '' }}"
-                                    required
-                                >
-                                <input type="hidden" name="customer_id" data-order-customer-id value="{{ $order->customer_id }}" required>
-                                <a
-                                    href="{{ route('clientes.index') }}"
-                                    target="_blank"
-                                    class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-primary hover:text-white dark:bg-slate-800 dark:text-gray-200"
-                                >
-                                    <i class="fa-solid fa-plus text-[11px]"></i>
-                                    {{ gettext('Crear') }}
-                                </a>
-                            </div>
+                        <div class="relative" data-select data-select-name="customer_id" data-select-searchable="true" data-select-manual="true">
+                            <input type="hidden" name="customer_id" data-select-input data-order-customer-id value="{{ $order->customer_id }}" required>
+                            <button
+                                type="button"
+                                class="flex w-full items-center justify-between rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-surface dark:bg-slate-900 dark:text-white"
+                                data-select-trigger
+                                data-select-placeholder="{{ gettext('Selecciona un cliente') }}"
+                            >
+                                <span data-select-value class="truncate">{{ $order->customer?->display_name ?? gettext('Selecciona un cliente') }}</span>
+                                <i class="fa-solid fa-chevron-down text-xs text-secondary transition" data-select-icon></i>
+                            </button>
                             <div
-                                class="invisible absolute left-0 right-0 z-50 mt-2 w-full origin-top scale-95 transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl opacity-0 transition will-change-transform data-[open='true']:visible data-[open='true']:scale-100 data-[open='true']:opacity-100 dark:border-gray-700 dark:bg-slate-900"
-                                data-order-customer-results
+                                class="invisible absolute left-0 right-0 z-50 mt-2 w-full origin-top scale-95 transform rounded-xl border border-gray-200 bg-white shadow-xl opacity-0 transition will-change-transform data-[open='true']:visible data-[open='true']:scale-100 data-[open='true']:opacity-100 dark:border-gray-700 dark:bg-slate-900"
+                                data-select-dropdown
                                 hidden
-                            ></div>
+                            >
+                                <div class="border-b border-gray-200 p-2 dark:border-gray-700">
+                                    <input
+                                        type="search"
+                                        data-order-customer-search
+                                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                                        placeholder="{{ gettext('Buscar por nombre o documento...') }}"
+                                        autocomplete="off"
+                                    >
+                                </div>
+                                <div class="max-h-60 overflow-y-auto py-2" data-order-customer-options></div>
+                            </div>
                         </div>
                         @error('customer_id')
                             <p class="text-xs text-rose-500">{{ $message }}</p>
@@ -55,33 +55,33 @@
                         <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                             {{ gettext('Equipo') }} <span class="text-rose-500">*</span>
                         </label>
-                        <div class="relative" data-order-equipment>
-                            <div class="flex w-full items-center gap-3 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white">
-                                <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
-                                <input
-                                    type="search"
-                                    class="flex-1 border-none bg-transparent outline-none"
-                                    placeholder="{{ gettext('Buscar por identificador o marca') }}"
-                                    autocomplete="off"
-                                    data-order-equipment-search
-                                    value="{{ ($order->equipment?->brand?->name ?? '') . ' · ' . ($order->equipment?->model?->name ?? '') . ' · ' . ($order->equipment?->identifier ?? '') }}"
-                                    required
-                                >
-                                <input type="hidden" name="equipment_id" data-order-equipment-id value="{{ $order->equipment_id }}" required>
-                                <a
-                                    href="{{ route('taller.equipos') }}"
-                                    target="_blank"
-                                    class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-primary hover:text-white dark:bg-slate-800 dark:text-gray-200"
-                                >
-                                    <i class="fa-solid fa-plus text-[11px]"></i>
-                                    {{ gettext('Crear') }}
-                                </a>
-                            </div>
+                        <div class="relative" data-select data-select-name="equipment_id" data-select-searchable="true" data-select-manual="true">
+                            <input type="hidden" name="equipment_id" data-select-input data-order-equipment-id value="{{ $order->equipment_id }}" required>
+                            <button
+                                type="button"
+                                class="flex w-full items-center justify-between rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-surface dark:bg-slate-900 dark:text-white"
+                                data-select-trigger
+                                data-select-placeholder="{{ gettext('Selecciona un equipo') }}"
+                            >
+                                <span data-select-value class="truncate">{{ $order->equipment ? (($order->equipment->brand?->name ?? '') . ' · ' . ($order->equipment->model?->name ?? '') . ' · ' . ($order->equipment->identifier ?? '')) : gettext('Selecciona un equipo') }}</span>
+                                <i class="fa-solid fa-chevron-down text-xs text-secondary transition" data-select-icon></i>
+                            </button>
                             <div
-                                class="invisible absolute left-0 right-0 z-50 mt-2 w-full origin-top scale-95 transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl opacity-0 transition will-change-transform data-[open='true']:visible data-[open='true']:scale-100 data-[open='true']:opacity-100 dark:border-gray-700 dark:bg-slate-900"
-                                data-order-equipment-results
+                                class="invisible absolute left-0 right-0 z-50 mt-2 w-full origin-top scale-95 transform rounded-xl border border-gray-200 bg-white shadow-xl opacity-0 transition will-change-transform data-[open='true']:visible data-[open='true']:scale-100 data-[open='true']:opacity-100 dark:border-gray-700 dark:bg-slate-900"
+                                data-select-dropdown
                                 hidden
-                            ></div>
+                            >
+                                <div class="border-b border-gray-200 p-2 dark:border-gray-700">
+                                    <input
+                                        type="search"
+                                        data-order-equipment-search
+                                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                                        placeholder="{{ gettext('Buscar por identificador o marca...') }}"
+                                        autocomplete="off"
+                                    >
+                                </div>
+                                <div class="max-h-60 overflow-y-auto py-2" data-order-equipment-options></div>
+                            </div>
                         </div>
                         @error('equipment_id')
                             <p class="text-xs text-rose-500">{{ $message }}</p>
@@ -176,33 +176,33 @@
                         <label class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                             {{ gettext('Usuario responsable') }} <span class="text-rose-500">*</span>
                         </label>
-                        <div class="relative" data-order-responsible>
-                            <div class="flex w-full items-center gap-3 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white">
-                                <i class="fa-solid fa-user-gear text-gray-400"></i>
-                                <input
-                                    type="search"
-                                    class="flex-1 border-none bg-transparent outline-none"
-                                    placeholder="{{ gettext('Buscar por nombre o correo') }}"
-                                    autocomplete="off"
-                                    data-order-responsible-search
-                                    value="{{ $order->responsible?->display_name ?? '' }}"
-                                    required
-                                >
-                                <input type="hidden" name="responsible_user_id" data-order-responsible-id value="{{ $order->responsible_user_id }}" required>
-                                <a
-                                    href="{{ route('security.users') }}"
-                                    target="_blank"
-                                    class="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-primary hover:text-white dark:bg-slate-800 dark:text-gray-200"
-                                >
-                                    <i class="fa-solid fa-plus text-[11px]"></i>
-                                    {{ gettext('Crear') }}
-                                </a>
-                            </div>
+                        <div class="relative" data-select data-select-name="responsible_user_id" data-select-searchable="true" data-select-manual="true">
+                            <input type="hidden" name="responsible_user_id" data-select-input data-order-responsible-id value="{{ $order->responsible_user_id }}" required>
+                            <button
+                                type="button"
+                                class="flex w-full items-center justify-between rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-surface dark:bg-slate-900 dark:text-white"
+                                data-select-trigger
+                                data-select-placeholder="{{ gettext('Selecciona un responsable') }}"
+                            >
+                                <span data-select-value class="truncate">{{ $order->responsible?->display_name ?? gettext('Selecciona un responsable') }}</span>
+                                <i class="fa-solid fa-chevron-down text-xs text-secondary transition" data-select-icon></i>
+                            </button>
                             <div
-                                class="invisible absolute left-0 right-0 z-50 mt-2 w-full origin-top scale-95 transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl opacity-0 transition will-change-transform data-[open='true']:visible data-[open='true']:scale-100 data-[open='true']:opacity-100 dark:border-gray-700 dark:bg-slate-900"
-                                data-order-responsible-results
+                                class="invisible absolute left-0 right-0 z-50 mt-2 w-full origin-top scale-95 transform rounded-xl border border-gray-200 bg-white shadow-xl opacity-0 transition will-change-transform data-[open='true']:visible data-[open='true']:scale-100 data-[open='true']:opacity-100 dark:border-gray-700 dark:bg-slate-900"
+                                data-select-dropdown
                                 hidden
-                            ></div>
+                            >
+                                <div class="border-b border-gray-200 p-2 dark:border-gray-700">
+                                    <input
+                                        type="search"
+                                        data-order-responsible-search
+                                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                                        placeholder="{{ gettext('Buscar por nombre o correo...') }}"
+                                        autocomplete="off"
+                                    >
+                                </div>
+                                <div class="max-h-60 overflow-y-auto py-2" data-order-responsible-options></div>
+                            </div>
                         </div>
                         @error('responsible_user_id')
                             <p class="text-xs text-rose-500">{{ $message }}</p>

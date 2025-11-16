@@ -19,6 +19,14 @@ class DocumentSequenceSeeder extends Seeder
             return;
         }
 
+        // Obtener la primera sucursal de la compañía
+        $branch = Branch::where('company_id', $company->id)->first();
+
+        if (! $branch) {
+            $this->command?->warn('No se encontró una sucursal para asociar los secuenciales.');
+            return;
+        }
+
         $types = config('document_sequences.types', []);
 
         $defaults = [
@@ -49,6 +57,7 @@ class DocumentSequenceSeeder extends Seeder
 
             $sequence = DocumentSequence::query()->firstOrNew([
                 'company_id' => $company->id,
+                'branch_id' => $branch->id,
                 'document_type' => $type,
             ]);
             

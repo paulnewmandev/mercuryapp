@@ -76,6 +76,22 @@
     >
         {{ $slot }}
     </div>
+    @auth
+        @php
+            try {
+                if (Route::has('chat.index')) {
+                    $chatRoute = route('chat.index');
+                } else {
+                    $chatRoute = null;
+                }
+            } catch (\Exception $e) {
+                $chatRoute = null;
+            }
+        @endphp
+        @if($chatRoute)
+            <x-chat.chat-bubble :unread-count="0" />
+        @endif
+    @endauth
     @stack('scripts')
 </body>
 </html>

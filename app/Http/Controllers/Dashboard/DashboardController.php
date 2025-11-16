@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Dashboard;
 use App\Contracts\SeoMetaManagerContract;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Models\Customer;
 use App\Models\Expense;
 use App\Models\Income;
 use App\Models\Invoice;
+use App\Models\Product;
 use App\Models\ProductTransfer;
 use App\Models\ReceivableEntry;
 use App\Models\WorkshopOrder;
@@ -33,7 +35,122 @@ class DashboardController extends Controller
             'description' => 'Visualiza métricas clave de tu negocio y gestiona las operaciones activas.',
         ])->toArray();
 
-        return view('Dashboard', compact('meta'));
+        // Obtener cards de totales
+        $cards = $this->getTotalCards();
+
+        // Obtener datos para gráficos mensuales
+        $monthlyData = $this->getMonthlyIncomeExpenseData();
+
+        return view('Dashboard', compact('meta', 'cards', 'monthlyData'));
+    }
+
+    /**
+     * Obtiene los cards de totales para el dashboard
+     */
+    private function getTotalCards(): array
+    {
+        $user = Auth::user();
+        $companyId = $user?->company_id;
+
+        if (!$companyId) {
+            $company = \App\Models\Company::query()->first();
+            $companyId = $company?->id;
+        }
+
+        if (!$companyId) {
+            return [
+                [
+                    'label' => gettext('Total de clientes'),
+                    'value' => '0',
+                    'icon' => 'fa-solid fa-users',
+                    'trend' => __('Activos: :count', ['count' => '0']),
+                ],
+                [
+                    'label' => gettext('Total de productos'),
+                    'value' => '0',
+                    'icon' => 'fa-solid fa-boxes-stacked',
+                    'trend' => __('Activos: :count', ['count' => '0']),
+                ],
+                [
+                    'label' => gettext('Órdenes activas'),
+                    'value' => '0',
+                    'icon' => 'fa-solid fa-wrench',
+                    'trend' => __('Completadas hoy: :count', ['count' => '0']),
+                ],
+                [
+                    'label' => gettext('Ingresos del mes'),
+                    'value' => '$0.00',
+                    'icon' => 'fa-solid fa-dollar-sign',
+                    'trend' => __('Hoy: $:amount', ['amount' => '0.00']),
+                ],
+            ];
+        }
+
+        // Total de clientes
+        $totalCustomers = Customer::where('company_id', $companyId)->count();
+        $activeCustomers = Customer::where('company_id', $companyId)->where('status', 'A')->count();
+
+        // Total de productos
+        $totalProducts = Product::where('company_id', $companyId)->count();
+        $activeProducts = Product::where('company_id', $companyId)->where('status', 'A')->count();
+
+        // Órdenes activas
+        $activeOrders = WorkshopOrder::where('workshop_orders.company_id', $companyId)
+            ->where('workshop_orders.status', 'A')
+            ->join('workshop_states', 'workshop_orders.state_id', '=', 'workshop_states.id')
+            ->where('workshop_states.name', '!=', 'Entregado')
+            ->where('workshop_states.name', '!=', 'Cancelado')
+            ->count(DB::raw('DISTINCT workshop_orders.id'));
+
+        $completedToday = WorkshopOrder::where('workshop_orders.company_id', $companyId)
+            ->whereDate('workshop_orders.updated_at', today())
+            ->join('workshop_states', 'workshop_orders.state_id', '=', 'workshop_states.id')
+            ->where('workshop_states.name', 'LIKE', '%Entregado%')
+            ->where('workshop_orders.status', 'A')
+            ->count(DB::raw('DISTINCT workshop_orders.id'));
+
+        // Ingresos del mes
+        $monthIncome = Invoice::where('company_id', $companyId)
+            ->where('document_type', 'FACTURA')
+            ->whereBetween('issue_date', [
+                now()->startOfMonth(),
+                now()->endOfMonth()
+            ])
+            ->where('status', 'A')
+            ->sum('total_amount');
+
+        $todayIncome = Invoice::where('company_id', $companyId)
+            ->where('document_type', 'FACTURA')
+            ->whereDate('issue_date', today())
+            ->where('status', 'A')
+            ->sum('total_amount');
+
+        return [
+            [
+                'label' => gettext('Total de clientes'),
+                'value' => number_format($totalCustomers),
+                'icon' => 'fa-solid fa-users',
+                'trend' => __('Activos: :count', ['count' => number_format($activeCustomers)]),
+            ],
+            [
+                'label' => gettext('Total de productos'),
+                'value' => number_format($totalProducts),
+                'icon' => 'fa-solid fa-boxes-stacked',
+                'trend' => __('Activos: :count', ['count' => number_format($activeProducts)]),
+            ],
+            [
+                'label' => gettext('Órdenes activas'),
+                'value' => number_format($activeOrders),
+                'icon' => 'fa-solid fa-wrench',
+                'trend' => __('Completadas hoy: :count', ['count' => number_format($completedToday)]),
+            ],
+            [
+                'label' => gettext('Ingresos del mes'),
+                'value' => '$' . number_format($monthIncome, 2),
+                'icon' => 'fa-solid fa-dollar-sign',
+                'trend' => __('Hoy: $:amount', ['amount' => number_format($todayIncome, 2)]),
+            ],
+        ];
     }
 
     /**
@@ -275,85 +392,87 @@ class DashboardController extends Controller
     {
         try {
             $user = Auth::user();
-            $companyId = $user->company_id;
+            $companyId = $user?->company_id;
 
+            // Si el usuario no tiene compañía (super admin), obtener la primera compañía disponible
             if (!$companyId) {
-                return response()->json([
-                    'status' => 'success',
-                    'data' => [
-                        'recent_orders' => [],
-                        'recent_sales' => [],
-                        'ready_to_deliver' => [],
-                        'recent_transfers' => [],
-                    ],
-                ], 200);
+                $company = \App\Models\Company::query()->first();
+                $companyId = $company?->id;
+                
+                // Si no hay compañía, retornar vacío
+                if (!$companyId) {
+                    return response()->json([
+                        'status' => 'success',
+                        'data' => [
+                            'recent_orders' => [],
+                            'recent_sales' => [],
+                            'ready_to_deliver' => [],
+                            'recent_transfers' => [],
+                        ],
+                    ], 200);
+                }
             }
 
-            // Últimas Órdenes de Trabajo Actualizadas
+            // Últimas Órdenes de Trabajo Actualizadas (sin filtro de fecha, solo las últimas 5)
             $recentOrders = WorkshopOrder::where('workshop_orders.company_id', $companyId)
                 ->where('workshop_orders.status', 'A')
                 ->with(['customer', 'state', 'equipment.brand', 'equipment.model'])
-                ->orderByDesc('workshop_orders.updated_at')
-                ->limit(10)
+                ->orderByDesc('workshop_orders.created_at')
+                ->limit(5)
                 ->get()
                 ->map(function ($order) {
                     return [
                         'id' => $order->id,
-                        'order_number' => $order->order_number,
-                        'customer_name' => $order->customer?->display_name ?? 'N/A',
-                        'equipment' => ($order->equipment?->brand?->name ?? '') . ' ' . ($order->equipment?->model?->name ?? ''),
+                        'order_number' => $order->order_number ?? 'N/A',
+                        'customer_name' => $order->customer?->display_name ?? $order->customer?->name ?? 'N/A',
+                        'equipment' => trim(($order->equipment?->brand?->name ?? '') . ' ' . ($order->equipment?->model?->name ?? '')) ?: 'N/A',
                         'state' => $order->state?->name ?? 'N/A',
-                        'updated_at' => $order->updated_at->diffForHumans(),
+                        'updated_at' => $order->updated_at?->diffForHumans() ?? 'N/A',
                     ];
                 });
 
-            // Últimas Ventas Realizadas
+            // Últimas Ventas Realizadas (sin filtro de fecha, solo las últimas 5)
             $recentSales = Invoice::where('company_id', $companyId)
                 ->where('document_type', 'FACTURA')
                 ->where('status', 'A')
                 ->with('customer')
-                ->orderByDesc('issue_date')
-                ->limit(10)
+                ->orderByDesc('created_at')
+                ->limit(5)
                 ->get()
                 ->map(function ($invoice) {
                     return [
                         'id' => $invoice->id,
-                        'invoice_number' => $invoice->invoice_number,
-                        'customer_name' => $invoice->customer?->display_name ?? 'N/A',
-                        'total_amount' => number_format($invoice->total_amount, 2, '.', ','),
-                        'issue_date' => $invoice->issue_date->format('d/m/Y'),
+                        'invoice_number' => $invoice->invoice_number ?? 'N/A',
+                        'customer_name' => $invoice->customer?->display_name ?? $invoice->customer?->name ?? 'N/A',
+                        'total_amount' => number_format($invoice->total_amount ?? 0, 2, '.', ','),
+                        'issue_date' => $invoice->issue_date ? $invoice->issue_date->format('d/m/Y') : 'N/A',
                     ];
                 });
 
-            // Próximas Entregas de Equipos (Listo para Entregar)
+            // Próximas Entregas de Equipos (las últimas 5 con fecha prometida, sin filtro de estado estricto)
             $readyToDeliver = WorkshopOrder::where('workshop_orders.company_id', $companyId)
                 ->where('workshop_orders.status', 'A')
-                ->join('workshop_states', 'workshop_orders.state_id', '=', 'workshop_states.id')
-                ->where(function ($query) {
-                    $query->where('workshop_states.name', 'LIKE', '%Listo%')
-                        ->orWhere('workshop_states.name', 'LIKE', '%Entregar%');
-                })
-                ->with(['customer', 'equipment.brand', 'equipment.model'])
-                ->select('workshop_orders.*')
-                ->orderBy('workshop_orders.promised_at')
-                ->limit(10)
+                ->whereNotNull('workshop_orders.promised_at')
+                ->with(['customer', 'equipment.brand', 'equipment.model', 'state'])
+                ->orderBy('workshop_orders.promised_at', 'ASC')
+                ->limit(5)
                 ->get()
                 ->map(function ($order) {
                     return [
                         'id' => $order->id,
-                        'order_number' => $order->order_number,
-                        'customer_name' => $order->customer?->display_name ?? 'N/A',
-                        'equipment' => ($order->equipment?->brand?->name ?? '') . ' ' . ($order->equipment?->model?->name ?? ''),
+                        'order_number' => $order->order_number ?? 'N/A',
+                        'customer_name' => $order->customer?->display_name ?? $order->customer?->name ?? 'N/A',
+                        'equipment' => trim(($order->equipment?->brand?->name ?? '') . ' ' . ($order->equipment?->model?->name ?? '')) ?: 'N/A',
                         'promised_at' => $order->promised_at ? $order->promised_at->format('d/m/Y') : 'N/A',
                     ];
                 });
 
-            // Últimos Movimientos de Inventario Críticos (transferencias recientes)
+            // Últimos Movimientos de Inventario (sin filtro de fecha, solo las últimas 5)
             $recentTransfers = ProductTransfer::where('company_id', $companyId)
                 ->where('status', 'A')
                 ->with(['originWarehouse', 'destinationWarehouse'])
                 ->orderByDesc('created_at')
-                ->limit(10)
+                ->limit(5)
                 ->get()
                 ->map(function ($transfer) {
                     return [
@@ -361,10 +480,18 @@ class DashboardController extends Controller
                         'reference' => $transfer->reference ?? 'N/A',
                         'origin' => $transfer->originWarehouse?->name ?? 'N/A',
                         'destination' => $transfer->destinationWarehouse?->name ?? 'N/A',
-                        'date' => $transfer->movement_date->format('d/m/Y'),
-                        'created_at' => $transfer->created_at->diffForHumans(),
+                        'date' => $transfer->movement_date ? $transfer->movement_date->format('d/m/Y') : 'N/A',
+                        'created_at' => $transfer->created_at?->diffForHumans() ?? 'N/A',
                     ];
                 });
+
+            \Log::info('Dashboard recent activity', [
+                'company_id' => $companyId,
+                'orders_count' => $recentOrders->count(),
+                'sales_count' => $recentSales->count(),
+                'deliveries_count' => $readyToDeliver->count(),
+                'transfers_count' => $recentTransfers->count(),
+            ]);
 
             return response()->json([
                 'status' => 'success',
@@ -446,5 +573,83 @@ class DashboardController extends Controller
                     'days' => 7,
                 ];
         }
+    }
+
+    /**
+     * Obtiene datos de ingresos y egresos por mes (enero a diciembre)
+     */
+    private function getMonthlyIncomeExpenseData(): array
+    {
+        $user = Auth::user();
+        $companyId = $user?->company_id;
+
+        if (!$companyId) {
+            $company = \App\Models\Company::query()->first();
+            $companyId = $company?->id;
+        }
+
+        if (!$companyId) {
+            $months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            return [
+                'months' => $months,
+                'incomes' => array_fill(0, 12, 0),
+                'expenses' => array_fill(0, 12, 0),
+                'total_income' => 0,
+                'total_expense' => 0,
+            ];
+        }
+
+        $currentYear = now()->year;
+        $months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        
+        // Ingresos por mes
+        $incomes = [];
+        $totalIncome = 0;
+        
+        for ($month = 1; $month <= 12; $month++) {
+            $startDate = Carbon::create($currentYear, $month, 1)->startOfMonth();
+            $endDate = Carbon::create($currentYear, $month, 1)->endOfMonth();
+            
+            // Ingresos desde Income y también desde Invoice (facturas)
+            $incomeFromIncome = Income::where('company_id', $companyId)
+                ->where('status', 'A')
+                ->whereBetween('movement_date', [$startDate, $endDate])
+                ->sum(DB::raw('amount_cents / 100'));
+            
+            $incomeFromInvoices = Invoice::where('company_id', $companyId)
+                ->where('document_type', 'FACTURA')
+                ->where('status', 'A')
+                ->whereBetween('issue_date', [$startDate, $endDate])
+                ->sum('total_amount');
+            
+            $monthIncome = $incomeFromIncome + $incomeFromInvoices;
+            $incomes[] = round($monthIncome, 2);
+            $totalIncome += $monthIncome;
+        }
+        
+        // Egresos por mes
+        $expenses = [];
+        $totalExpense = 0;
+        
+        for ($month = 1; $month <= 12; $month++) {
+            $startDate = Carbon::create($currentYear, $month, 1)->startOfMonth();
+            $endDate = Carbon::create($currentYear, $month, 1)->endOfMonth();
+            
+            $monthExpense = Expense::where('company_id', $companyId)
+                ->where('status', 'A')
+                ->whereBetween('movement_date', [$startDate, $endDate])
+                ->sum(DB::raw('amount_cents / 100'));
+            
+            $expenses[] = round($monthExpense, 2);
+            $totalExpense += $monthExpense;
+        }
+        
+        return [
+            'months' => $months,
+            'incomes' => $incomes,
+            'expenses' => $expenses,
+            'total_income' => round($totalIncome, 2),
+            'total_expense' => round($totalExpense, 2),
+        ];
     }
 }

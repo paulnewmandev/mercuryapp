@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Company\CompanyProfileController;
+use App\Http\Controllers\User\UserProfileController;
 use App\Http\Controllers\Accounting\ExpenseController;
 use App\Http\Controllers\Accounting\IncomeController;
 use App\Http\Controllers\Accounting\PayableEntryController;
@@ -50,6 +51,8 @@ use App\Http\Controllers\Sales\InvoiceController;
 use App\Http\Controllers\Sales\SalesNoteController;
 use App\Http\Controllers\Sales\QuotationController;
 use App\Http\Controllers\Accounting\AccountingSalesController;
+use App\Http\Controllers\Chat\ChatController;
+use App\Http\Controllers\Chat\ChatToolController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -133,6 +136,10 @@ Route::middleware('auth')->group(function (): void {
 
     Route::get('configuration/company', [CompanyProfileController::class, 'show'])->name('configuration.company');
     Route::patch('configuration/company', [CompanyProfileController::class, 'update'])->name('configuration.company.update');
+
+    Route::get('profile', [UserProfileController::class, 'show'])->name('profile.show');
+    Route::patch('profile', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::patch('profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.update-password');
 
     Route::get('configuration/branches/data', [BranchController::class, 'list'])->name('configuration.branches.data');
     Route::get('configuration/branches', [BranchController::class, 'index'])->name('configuration.branches');
@@ -519,6 +526,7 @@ Route::prefix('customers/categories')->name('clientes.categorias.')->group(funct
             'sales.quotations.create',
             'sales.quotations.edit',
             'sales.quotations.show',
+            'profile.show',
         ], true)) {
             continue;
         }
@@ -532,4 +540,18 @@ Route::prefix('customers/categories')->name('clientes.categorias.')->group(funct
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+    // Chat routes
+    Route::prefix('chat')->name('chat.')->group(function (): void {
+        Route::get('/', [ChatController::class, 'index'])->name('index');
+        Route::get('/conversations/{conversation}', [ChatController::class, 'show'])->name('show')->whereUuid('conversation');
+        Route::post('/conversations', [ChatController::class, 'store'])->name('store');
+        Route::delete('/conversations/{conversation}', [ChatController::class, 'destroy'])->name('destroy')->whereUuid('conversation');
+        Route::post('/conversations/{conversation}/messages', [ChatController::class, 'sendMessage'])->name('messages.send')->whereUuid('conversation');
+        
+        // Tool endpoints (llamadas desde el LLM)
+        Route::post('/tools/search-customer-by-document', [ChatToolController::class, 'searchCustomerByDocument'])->name('tools.search-customer');
+        Route::post('/tools/get-workshop-order-by-number', [ChatToolController::class, 'getWorkshopOrderByNumber'])->name('tools.get-order');
+        Route::post('/tools/search-products-by-names', [ChatToolController::class, 'searchProductsByNames'])->name('tools.search-products');
+    });
 });

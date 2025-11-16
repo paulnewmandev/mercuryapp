@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('jobs', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->bigIncrements('id');
             $table->string('queue', 255)->index();
             $table->longText('payload');
@@ -27,7 +27,7 @@ return new class extends Migration
 
         Schema::create('job_batches', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->string('id', 255)->primary();
             $table->string('name', 255);
             $table->integer('total_jobs');

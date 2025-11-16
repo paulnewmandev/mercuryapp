@@ -315,7 +315,7 @@ class DocumentSequenceController extends Controller
         $connection = config('database.default');
 
         return match (config("database.connections.{$connection}.driver")) {
-            'mysql', 'mariadb' => 'utf8mb4_0900_ai_ci',
+            'mysql', 'mariadb' => 'utf8mb4_unicode_ci',
             default => 'utf8mb4_general_ci',
         };
     }

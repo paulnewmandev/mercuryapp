@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('product_transfers', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('origin_warehouse_id');
@@ -30,7 +30,7 @@ return new class extends Migration
 
         Schema::create('product_transfer_items', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('product_transfer_id');
             $table->uuid('product_id');

@@ -21,7 +21,7 @@ class InvoiceItem extends Model
         'item_type',
         'quantity',
         'unit_price',
-        'subtotal',
+        // 'subtotal' is a generated column, calculated automatically by MySQL
     ];
 
     protected $casts = [

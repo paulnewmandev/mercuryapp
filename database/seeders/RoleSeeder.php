@@ -36,6 +36,10 @@ class RoleSeeder extends Seeder
     private function seedCompanyRoles(): void
     {
         $roles = [
+            'owner' => [
+                'display' => 'Propietario',
+                'description' => 'Acceso completo a todos los módulos de la compañía.',
+            ],
             'admin' => [
                 'display' => 'Administrador',
                 'description' => 'Gestiona todo el módulo de la compañía.',

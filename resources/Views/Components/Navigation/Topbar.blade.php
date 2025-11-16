@@ -174,8 +174,13 @@
                     <div class="border-t border-surface"></div>
                     <ul class="divide-y divide-surface text-sm text-secondary">
                         <li>
+                            <a href="{{ route('profile.show') }}" class="flex items-center px-4 py-3 transition hover:bg-surface-muted hover:text-heading">
+                                <i class="fa-regular fa-user mr-2 text-primary"></i>{{ gettext('Mi perfil') }}
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('configuration.company') }}" class="flex items-center px-4 py-3 transition hover:bg-surface-muted hover:text-heading">
-                                <i class="fa-regular fa-user mr-2 text-primary"></i>{{ gettext('Perfil') }}
+                                <i class="fa-solid fa-building mr-2 text-primary"></i>{{ gettext('Perfil de empresa') }}
                             </a>
                         </li>
                         <li>

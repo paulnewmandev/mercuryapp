@@ -334,7 +334,7 @@
                                     href="${labelUrl.replace(/"/g, '&quot;').replace(/'/g, '&#39;')}"
                                     target="_blank"
                                     class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-gray-600 transition hover:border-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 dark:border-gray-700 dark:text-gray-300 dark:hover:border-primary"
-                                    title="Etiqueta"
+                                    title="Etiqueta PDF"
                                 >
                                     <i class="fa-solid fa-barcode text-sm"></i>
                                 </a>

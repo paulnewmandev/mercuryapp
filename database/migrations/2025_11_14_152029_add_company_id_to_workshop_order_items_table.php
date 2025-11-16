@@ -12,24 +12,34 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('workshop_order_items', function (Blueprint $table): void {
-            // Agregar columna company_id como nullable primero
-            $table->uuid('company_id')->nullable()->after('id');
-        });
+        // Verificar si la columna company_id ya existe
+        if (!Schema::hasColumn('workshop_order_items', 'company_id')) {
+            Schema::table('workshop_order_items', function (Blueprint $table): void {
+                // Agregar columna company_id como nullable primero
+                $table->uuid('company_id')->nullable()->after('id');
+            });
 
-        // Poblar company_id con los valores de workshop_orders
-        DB::statement('
-            UPDATE workshop_order_items
-            INNER JOIN workshop_orders ON workshop_order_items.order_id = workshop_orders.id
-            SET workshop_order_items.company_id = workshop_orders.company_id
-        ');
+            // Poblar company_id con los valores de workshop_orders
+            DB::statement('
+                UPDATE workshop_order_items
+                INNER JOIN workshop_orders ON workshop_order_items.order_id = workshop_orders.id
+                SET workshop_order_items.company_id = workshop_orders.company_id
+            ');
 
-        // Hacer la columna NOT NULL y agregar foreign key e índice
-        Schema::table('workshop_order_items', function (Blueprint $table): void {
-            $table->uuid('company_id')->nullable(false)->change();
-            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
-            $table->index(['company_id', 'order_id'], 'workshop_order_items_company_order_index');
-        });
+            // Hacer la columna NOT NULL y agregar foreign key e índice
+            Schema::table('workshop_order_items', function (Blueprint $table): void {
+                $table->uuid('company_id')->nullable(false)->change();
+            });
+        }
+
+        // Agregar foreign key e índice si no existen (usar try-catch para evitar errores si ya existen)
+        try {
+            Schema::table('workshop_order_items', function (Blueprint $table): void {
+                $table->index(['company_id', 'order_id'], 'workshop_order_items_company_order_index');
+            });
+        } catch (\Exception $e) {
+            // El índice ya existe, continuar
+        }
     }
 
     /**

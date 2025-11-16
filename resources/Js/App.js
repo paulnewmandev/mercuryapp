@@ -26433,52 +26433,162 @@ const initPOSModule = () => {
             paymentMethodsContainer.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">' + tx('No hay métodos de pago agregados') + '</p>';
         } else {
             paymentMethodsContainer.innerHTML = paymentMethods.map((method, index) => `
-                <div class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-slate-800" data-payment-method-item="${index}">
-                    <select
-                        data-payment-method-type="${index}"
-                        class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
-                    >
-                        <option value="">${tx('Seleccionar...')}</option>
-                        ${staticPaymentMethods.map(pm => `
-                            <option value="${pm.id}" ${method.type === pm.id ? 'selected' : ''}>${pm.name}</option>
-                        `).join('')}
-                    </select>
-                    <input
-                        type="number"
-                        data-payment-method-amount="${index}"
-                        step="0.01"
-                        min="0"
-                        placeholder="0.00"
-                        value="${method.amount || ''}"
-                        class="w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
-                    >
-                    <button
-                        type="button"
-                        data-payment-method-remove="${index}"
-                        class="flex h-9 w-9 items-center justify-center rounded-lg text-rose-500 transition hover:bg-rose-50 active:scale-95 dark:hover:bg-rose-900/20"
-                    >
-                        <i class="fa-solid fa-times text-sm"></i>
-                    </button>
+                <div class="space-y-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-slate-800" data-payment-method-item="${index}">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-1" data-select data-select-name="payment_method_${index}" data-select-manual="true">
+                            <input type="hidden" data-payment-method-type="${index}" data-select-input value="${method.type || ''}">
+                            <button
+                                type="button"
+                                class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-700 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-surface dark:bg-slate-900 dark:text-white"
+                                data-select-trigger
+                                data-select-placeholder="${tx('Seleccionar método...')}"
+                            >
+                                <span data-select-value class="truncate">${method.type ? staticPaymentMethods.find(pm => pm.id === method.type)?.name || method.type : tx('Seleccionar método...')}</span>
+                                <i class="fa-solid fa-chevron-down text-xs text-secondary transition" data-select-icon></i>
+                            </button>
+                            <div
+                                class="invisible absolute left-0 right-0 z-50 mt-2 w-full origin-top scale-95 transform rounded-lg border border-gray-200 bg-white shadow-xl opacity-0 transition will-change-transform data-[open='true']:visible data-[open='true']:scale-100 data-[open='true']:opacity-100 dark:border-gray-700 dark:bg-slate-900"
+                                data-select-dropdown
+                                hidden
+                            >
+                                <div class="max-h-60 overflow-y-auto py-2">
+                                    ${staticPaymentMethods.map(pm => `
+                                        <button
+                                            type="button"
+                                            class="w-full px-4 py-2 text-left text-sm text-gray-700 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-800"
+                                            data-value="${pm.id}"
+                                            data-select-option
+                                        >
+                                            ${pm.name}
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <input
+                            type="number"
+                            data-payment-method-amount="${index}"
+                            step="0.01"
+                            min="0"
+                            placeholder="0.00"
+                            value="${method.amount || ''}"
+                            class="w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                        >
+                        <button
+                            type="button"
+                            data-payment-method-remove="${index}"
+                            class="flex h-9 w-9 items-center justify-center rounded-lg text-rose-500 transition hover:bg-rose-50 active:scale-95 dark:hover:bg-rose-900/20"
+                        >
+                            <i class="fa-solid fa-times text-sm"></i>
+                        </button>
+                    </div>
+                    <div class="payment-method-reference" data-payment-method-reference="${index}" style="display: ${(method.type === 'TRANSFERENCIA' || method.type === 'TARJETA') ? 'block' : 'none'};">
+                        <label class="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-400">
+                            ${tx('Número de referencia')} <span class="text-rose-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            data-payment-method-reference-input="${index}"
+                            placeholder="${tx('Ingrese el número de referencia')}"
+                            value="${method.reference || ''}"
+                            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                        >
+                    </div>
                 </div>
             `).join('');
             
             // Agregar event listeners
             paymentMethods.forEach((_, index) => {
-                const typeSelect = paymentMethodsContainer.querySelector(`[data-payment-method-type="${index}"]`);
-                const amountInput = paymentMethodsContainer.querySelector(`[data-payment-method-amount="${index}"]`);
-                const removeBtn = paymentMethodsContainer.querySelector(`[data-payment-method-remove="${index}"]`);
+                const paymentItem = paymentMethodsContainer.querySelector(`[data-payment-method-item="${index}"]`);
+                const typeSelect = paymentItem?.querySelector(`[data-select-name="payment_method_${index}"]`);
+                const typeInput = paymentItem?.querySelector(`[data-payment-method-type="${index}"]`);
+                const amountInput = paymentItem?.querySelector(`[data-payment-method-amount="${index}"]`);
+                const referenceInput = paymentItem?.querySelector(`[data-payment-method-reference-input="${index}"]`);
+                const referenceContainer = paymentItem?.querySelector(`[data-payment-method-reference="${index}"]`);
+                const removeBtn = paymentItem?.querySelector(`[data-payment-method-remove="${index}"]`);
                 
+                // Initialize custom select
                 if (typeSelect) {
-                    typeSelect.addEventListener('change', (e) => {
-                        paymentMethods[index].type = e.target.value;
-                        updatePaymentTotals();
-                    });
+                    const trigger = typeSelect.querySelector('[data-select-trigger]');
+                    const dropdown = typeSelect.querySelector('[data-select-dropdown]');
+                    const valueSpan = typeSelect.querySelector('[data-select-value]');
+                    const options = typeSelect.querySelectorAll('[data-select-option]');
+                    
+                    if (trigger && dropdown) {
+                        const closeSelect = () => {
+                            dropdown.hidden = true;
+                            dropdown.dataset.open = 'false';
+                            typeSelect.dataset.open = 'false';
+                            trigger.setAttribute('aria-expanded', 'false');
+                            const icon = typeSelect.querySelector('[data-select-icon]');
+                            if (icon) icon.classList.remove('rotate-180');
+                        };
+                        
+                        const openSelect = () => {
+                            dropdown.hidden = false;
+                            dropdown.dataset.open = 'true';
+                            typeSelect.dataset.open = 'true';
+                            trigger.setAttribute('aria-expanded', 'true');
+                            const icon = typeSelect.querySelector('[data-select-icon]');
+                            if (icon) icon.classList.add('rotate-180');
+                        };
+                        
+                        trigger.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const isOpen = dropdown.dataset.open === 'true';
+                            if (isOpen) {
+                                closeSelect();
+                            } else {
+                                openSelect();
+                            }
+                        });
+                        
+                        options.forEach(option => {
+                            option.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const value = option.dataset.value;
+                                if (typeInput) typeInput.value = value;
+                                if (valueSpan) {
+                                    valueSpan.textContent = option.textContent.trim();
+                                }
+                                paymentMethods[index].type = value;
+                                
+                                // Show/hide reference field
+                                if (referenceContainer) {
+                                    if (value === 'TRANSFERENCIA' || value === 'TARJETA') {
+                                        referenceContainer.style.display = 'block';
+                                    } else {
+                                        referenceContainer.style.display = 'none';
+                                        if (referenceInput) referenceInput.value = '';
+                                        paymentMethods[index].reference = '';
+                                    }
+                                }
+                                
+                                closeSelect();
+                                updatePaymentTotals();
+                            });
+                        });
+                        
+                        document.addEventListener('click', (e) => {
+                            if (!typeSelect.contains(e.target)) {
+                                closeSelect();
+                            }
+                        });
+                    }
                 }
                 
                 if (amountInput) {
                     amountInput.addEventListener('input', (e) => {
                         paymentMethods[index].amount = parseFloat(e.target.value) || 0;
                         updatePaymentTotals();
+                    });
+                }
+                
+                if (referenceInput) {
+                    referenceInput.addEventListener('input', (e) => {
+                        paymentMethods[index].reference = e.target.value.trim();
                     });
                 }
                 
@@ -26518,7 +26628,7 @@ const initPOSModule = () => {
 
     // Helper: Add payment method
     const addPaymentMethod = () => {
-        paymentMethods.push({ type: '', amount: 0 });
+        paymentMethods.push({ type: '', amount: 0, reference: '' });
         renderPaymentMethods();
     };
 
@@ -27158,6 +27268,18 @@ const initPOSModule = () => {
                 return;
             }
             
+            // Validar que los métodos TRANSFERENCIA y TARJETA tengan referencia
+            for (const method of validPaymentMethods) {
+                if ((method.type === 'TRANSFERENCIA' || method.type === 'TARJETA') && !method.reference?.trim()) {
+                    showAlert({ 
+                        title: tx('Error'), 
+                        text: tx('El número de referencia es requerido para ') + method.type + '.', 
+                        icon: 'error' 
+                    });
+                    return;
+                }
+            }
+            
             // Calcular totales
             const subtotal = cartItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
             const tax = subtotal * 0.15;
@@ -27199,6 +27321,7 @@ const initPOSModule = () => {
                         payment_methods: validPaymentMethods.map(pm => ({
                             type: pm.type,
                             amount: parseFloat(pm.amount),
+                            reference: pm.reference || null,
                         })),
                         notes: paymentNotesTextarea?.value || '',
                         items: cartItems.map(item => ({

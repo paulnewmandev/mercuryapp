@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->string('customer_type', 20);
@@ -37,7 +37,7 @@ return new class extends Migration
 
         Schema::create('service_orders', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('branch_id');
@@ -67,7 +67,7 @@ return new class extends Migration
 
         Schema::create('service_order_items', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('service_order_id');
             $table->uuid('item_id');
             $table->string('item_type', 20);
@@ -82,7 +82,7 @@ return new class extends Migration
 
         Schema::create('invoices', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('branch_id');
@@ -111,7 +111,7 @@ return new class extends Migration
 
         Schema::create('invoice_items', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('invoice_id');
             $table->uuid('item_id');
             $table->string('item_type', 20);
@@ -126,7 +126,7 @@ return new class extends Migration
 
         Schema::create('invoice_payments', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('invoice_id');
             $table->uuid('payment_method_id');
@@ -143,7 +143,7 @@ return new class extends Migration
 
         Schema::create('notifications', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('user_id')->nullable();

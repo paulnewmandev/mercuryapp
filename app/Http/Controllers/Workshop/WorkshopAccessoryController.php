@@ -151,6 +151,6 @@ class WorkshopAccessoryController extends Controller
 
         return $connectionConfig['search_collation']
             ?? $connectionConfig['collation']
-            ?? 'utf8mb4_0900_ai_ci';
+            ?? 'utf8mb4_unicode_ci';
     }
 }

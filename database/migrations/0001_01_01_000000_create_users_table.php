@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->string('name', 255);
             $table->string('legal_name', 255);
@@ -38,7 +38,7 @@ return new class extends Migration
 
         Schema::create('roles', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->string('name', 100)->unique();
             $table->string('display_name', 255);
@@ -51,7 +51,7 @@ return new class extends Migration
 
         Schema::create('users', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('role_id');
@@ -75,7 +75,7 @@ return new class extends Migration
 
         Schema::create('user_sessions', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('user_id');
             $table->string('ip_address', 45);
@@ -91,7 +91,7 @@ return new class extends Migration
 
         Schema::create('user_tokens', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('user_id');
             $table->text('token');
@@ -104,7 +104,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->string('id')->primary();
             $table->uuid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();

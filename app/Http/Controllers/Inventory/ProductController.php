@@ -662,6 +662,7 @@ class ProductController extends Controller
             'subcategory_name' => $product->subcategory?->name,
             'warehouse_name' => $product->warehouse?->name,
             'barcode_label_url' => route('inventory.products.barcode', $product),
+            'label_url' => route('inventory.products.barcode', $product),
             'status' => $product->status,
             'status_label' => match ($product->status) {
                 'A' => gettext('Activo'),

@@ -14,6 +14,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $this->seedSuperAdmin();
+        $this->seedOwnerUser();
         $this->seedCompanyUsers();
     }
 
@@ -40,6 +41,42 @@ class UserSeeder extends Seeder
         $user->role_id = $role->id;
         $user->first_name = 'Super';
         $user->last_name = 'Administrador';
+        $user->password_hash = Hash::make('12345678');
+        $user->document_number = null;
+        $user->phone_number = null;
+        $user->status = 'A';
+        $user->save();
+    }
+
+    private function seedOwnerUser(): void
+    {
+        $company = Company::query()->first();
+        
+        if (! $company) {
+            return;
+        }
+
+        $role = Role::withoutGlobalScopes()
+            ->where('company_id', $company->id)
+            ->where('name', 'owner')
+            ->first();
+
+        if (! $role) {
+            return;
+        }
+
+        $user = User::withoutGlobalScopes()->firstOrNew([
+            'email' => 'jchox@gmail.com',
+        ]);
+        
+        if (!$user->exists) {
+            $user->id = (string) Str::uuid();
+        }
+        
+        $user->company_id = $company->id;
+        $user->role_id = $role->id;
+        $user->first_name = 'Juan Carlos';
+        $user->last_name = 'Hox';
         $user->password_hash = Hash::make('12345678');
         $user->document_number = null;
         $user->phone_number = null;

@@ -19,7 +19,7 @@ class Topbar extends Component
      */
     public function render(): View
     {
-        return view('components.navigation.Topbar');
+        return view('components.navigation.topbar');
     }
 }
 

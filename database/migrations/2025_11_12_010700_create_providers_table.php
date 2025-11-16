@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('providers', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
 
             $table->uuid('id')->primary();
             $table->uuid('company_id');

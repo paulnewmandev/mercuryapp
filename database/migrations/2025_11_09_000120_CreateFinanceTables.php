@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('bank_accounts', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->string('bank_name', 255);
@@ -33,7 +33,7 @@ return new class extends Migration
 
         Schema::create('payment_cards', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->string('name', 255);
@@ -47,7 +47,7 @@ return new class extends Migration
 
         Schema::create('payment_methods', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->string('name', 50);
             $table->char('status', 1)->default('A')->comment('A=Activo,I=Inactivo,T=Papelera');
@@ -58,7 +58,7 @@ return new class extends Migration
 
         Schema::create('income_types', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->string('code', 50);
@@ -74,7 +74,7 @@ return new class extends Migration
 
         Schema::create('expense_types', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->string('code', 50);
@@ -90,7 +90,7 @@ return new class extends Migration
 
         Schema::create('checks', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('bank_account_id');

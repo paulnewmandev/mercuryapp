@@ -336,8 +336,8 @@ return [
             'title' => 'Tarjetas',
             'parent' => 'Configuración',
         ],
-        'perfil.show' => [
-            'path' => 'perfil',
+        'profile.show' => [
+            'path' => 'profile',
             'title' => 'Mi perfil',
             'parent' => null,
         ],

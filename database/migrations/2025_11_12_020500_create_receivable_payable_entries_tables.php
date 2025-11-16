@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('receivable_entries', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('receivable_category_id');
@@ -32,7 +32,7 @@ return new class extends Migration {
 
         Schema::create('payable_entries', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('payable_category_id');

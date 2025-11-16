@@ -108,7 +108,7 @@ class ProductTransferController extends Controller
             $perPage = 10;
         }
 
-        $accentInsensitiveCollation = config('database.connections.mysql.search_collation', 'utf8mb4_0900_ai_ci');
+        $accentInsensitiveCollation = config('database.connections.mysql.search_collation', 'utf8mb4_unicode_ci');
         $tokens = $search->isEmpty()
             ? collect()
             : collect(explode(' ', Str::ascii(Str::lower($search))))

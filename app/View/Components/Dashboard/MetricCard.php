@@ -31,7 +31,7 @@ class MetricCard extends Component
      */
     public function render(): View
     {
-        return view('components.dashboard.MetricCard');
+        return view('components.dashboard.metric-card');
     }
 }
 

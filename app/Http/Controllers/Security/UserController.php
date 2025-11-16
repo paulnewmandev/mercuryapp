@@ -276,7 +276,7 @@ class UserController extends Controller
 
     private function resolveAccentInsensitiveCollation(): string
     {
-        return config('database.connections.mysql.search_collation', 'utf8mb4_0900_ai_ci');
+        return config('database.connections.mysql.search_collation', 'utf8mb4_unicode_ci');
     }
 
     private function transformUser(User $user): array

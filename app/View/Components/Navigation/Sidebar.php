@@ -19,7 +19,7 @@ class Sidebar extends Component
      */
     public function render(): View
     {
-        return view('components.navigation.Sidebar');
+        return view('components.navigation.sidebar');
     }
 }
 

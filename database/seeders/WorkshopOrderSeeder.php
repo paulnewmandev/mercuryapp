@@ -85,6 +85,11 @@ class WorkshopOrderSeeder extends Seeder
 
             $priorities = ['Normal', 'Alta', 'Urgente'];
 
+            // Eliminar órdenes existentes para esta compañía
+            WorkshopOrder::query()
+                ->where('company_id', $company->id)
+                ->delete();
+
             $createdCount = 0;
             $advanceCount = 0;
 
@@ -106,6 +111,10 @@ class WorkshopOrderSeeder extends Seeder
                 $sequence->emission_point_code = '001';
                 $sequence->current_sequence = 0;
                 $sequence->status = 'A';
+                $sequence->save();
+            } else {
+                // Resetear el secuencial a 0 para empezar desde el principio
+                $sequence->current_sequence = 0;
                 $sequence->save();
             }
 
@@ -175,6 +184,29 @@ class WorkshopOrderSeeder extends Seeder
 
                 $advanceCount++;
                 $createdCount++;
+            }
+
+            // Actualizar el secuencial al número más alto usado
+            $maxSequence = 0;
+            $orders = WorkshopOrder::query()
+                ->where('company_id', $company->id)
+                ->whereNotNull('order_number')
+                ->get();
+            
+            foreach ($orders as $order) {
+                // Extraer el número secuencial del order_number (formato: 001-XXX-YYY)
+                // El número secuencial se calcula: (XXX - 1) * 999 + YYY
+                if (preg_match('/001-(\d{3})-(\d{3})/', $order->order_number, $matches)) {
+                    $secondGroup = (int) $matches[1];
+                    $thirdGroup = (int) $matches[2];
+                    $seqNum = ($secondGroup - 1) * 999 + $thirdGroup;
+                    $maxSequence = max($maxSequence, $seqNum);
+                }
+            }
+            
+            if ($maxSequence > 0 && $sequence) {
+                $sequence->current_sequence = $maxSequence;
+                $sequence->save();
             }
 
             $this->command?->info(sprintf(

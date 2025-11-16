@@ -97,9 +97,12 @@ return new class extends Migration
             DB::statement('DELETE FROM document_sequences WHERE company_id IS NULL');
         }
 
-        Schema::table('document_sequences', function (Blueprint $table): void {
+        // Verificar nuevamente si branch_id existe antes de la modificación de schema
+        $hasBranchIdAfterUpdate = Schema::hasColumn('document_sequences', 'branch_id');
+
+        Schema::table('document_sequences', function (Blueprint $table) use ($hasBranchIdAfterUpdate): void {
             // Eliminar índices y foreign key existentes solo si branch_id existe
-            if ($hasBranchId) {
+            if ($hasBranchIdAfterUpdate) {
                 // Verificar si la foreign key existe antes de eliminarla
                 $foreignKeys = DB::select("
                     SELECT CONSTRAINT_NAME 

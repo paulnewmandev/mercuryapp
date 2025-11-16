@@ -25,135 +25,138 @@
                 <div class="mb-4 rounded-lg bg-white p-5 shadow-md dark:bg-slate-800">
                     <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">{{ gettext('Información de Venta') }}</h2>
                     
-                    {{-- Selección de vendedor --}}
-                    <div class="mb-4">
-                        <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                            {{ gettext('Vendedor') }}
-                        </label>
-                        <div class="relative" data-pos-salesperson>
-                            <button
-                                type="button"
-                                data-pos-salesperson-trigger
-                                class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white touch-manipulation"
-                            >
-                                <span data-pos-salesperson-display>{{ gettext('Seleccionar vendedor...') }}</span>
-                                <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
-                            </button>
-                            <input type="hidden" data-pos-salesperson-id>
-                            <div
-                                class="absolute left-0 right-0 top-full z-50 mt-2 hidden max-h-96 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-slate-800"
-                                data-pos-salesperson-dropdown
-                            >
-                                <div class="border-b border-gray-200 p-3 dark:border-gray-700">
-                                    <input
-                                        type="search"
-                                        data-pos-salesperson-search
-                                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
-                                        placeholder="{{ gettext('Buscar vendedor...') }}"
-                                        autocomplete="off"
-                                    >
-                                </div>
-                                <div class="max-h-64 overflow-y-auto" data-pos-salesperson-results></div>
-                            </div>
-                            <div class="mt-2 flex items-center gap-2" data-pos-salesperson-selected style="display: none;">
-                                <span class="text-sm font-medium text-gray-900 dark:text-white" data-pos-salesperson-name></span>
+                    {{-- Selects en una sola fila --}}
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        {{-- Selección de vendedor --}}
+                        <div>
+                            <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                {{ gettext('Vendedor') }}
+                            </label>
+                            <div class="relative" data-pos-salesperson>
                                 <button
                                     type="button"
-                                    data-pos-salesperson-clear
-                                    class="text-rose-500 hover:text-rose-600"
+                                    data-pos-salesperson-trigger
+                                    class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white touch-manipulation"
                                 >
-                                    <i class="fa-solid fa-times"></i>
+                                    <span data-pos-salesperson-display class="truncate">{{ gettext('Seleccionar vendedor...') }}</span>
+                                    <i class="fa-solid fa-chevron-down text-xs text-gray-400 ml-2 flex-shrink-0"></i>
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Selección de cliente --}}
-                    <div class="mb-4">
-                        <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                            {{ gettext('Cliente') }} <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="relative" data-pos-customer>
-                            <button
-                                type="button"
-                                data-pos-customer-trigger
-                                class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white touch-manipulation"
-                            >
-                                <span data-pos-customer-display>{{ gettext('Seleccionar cliente...') }}</span>
-                                <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
-                            </button>
-                            <input type="hidden" data-pos-customer-id required>
-                            <div
-                                class="absolute left-0 right-0 top-full z-50 mt-2 hidden max-h-96 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-slate-800"
-                                data-pos-customer-dropdown
-                            >
-                                <div class="border-b border-gray-200 p-3 dark:border-gray-700">
-                                    <input
-                                        type="search"
-                                        data-pos-customer-search
-                                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
-                                        placeholder="{{ gettext('Buscar cliente...') }}"
-                                        autocomplete="off"
-                                    >
-                                </div>
-                                <div class="max-h-64 overflow-y-auto" data-pos-customer-results></div>
-                            </div>
-                            <div class="mt-2 flex items-center gap-2" data-pos-customer-selected style="display: none;">
-                                <span class="text-sm font-medium text-gray-900 dark:text-white" data-pos-customer-name></span>
-                                <button
-                                    type="button"
-                                    data-pos-customer-clear
-                                    class="text-rose-500 hover:text-rose-600"
+                                <input type="hidden" data-pos-salesperson-id>
+                                <div
+                                    class="absolute left-0 right-0 top-full z-50 mt-2 hidden max-h-96 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-slate-800"
+                                    data-pos-salesperson-dropdown
                                 >
-                                    <i class="fa-solid fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Cargar orden de trabajo --}}
-                    <div class="mb-4">
-                        <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                            {{ gettext('Cargar Orden de Trabajo') }} <span class="text-xs font-normal text-gray-400">(Opcional)</span>
-                        </label>
-                        <div class="relative" data-pos-work-order>
-                            <button
-                                type="button"
-                                data-pos-work-order-trigger
-                                class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white touch-manipulation"
-                            >
-                                <span data-pos-work-order-display>{{ gettext('Buscar orden de trabajo...') }}</span>
-                                <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
-                            </button>
-                            <input type="hidden" data-pos-work-order-id>
-                            <div
-                                class="absolute left-0 right-0 top-full z-50 mt-2 hidden max-h-96 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-slate-800"
-                                data-pos-work-order-dropdown
-                            >
-                                <div class="border-b border-gray-200 p-3 dark:border-gray-700">
-                                    <input
-                                        type="search"
-                                        data-pos-work-order-search
-                                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
-                                        placeholder="{{ gettext('Buscar por número de orden...') }}"
-                                        autocomplete="off"
-                                    >
-                                </div>
-                                <div class="max-h-64 overflow-y-auto" data-pos-work-order-results></div>
-                            </div>
-                            <div class="mt-2 rounded-lg bg-primary/10 p-3" data-pos-work-order-selected style="display: none;">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-white" data-pos-work-order-number></p>
-                                        <p class="text-xs text-gray-600 dark:text-gray-400" data-pos-work-order-customer></p>
+                                    <div class="border-b border-gray-200 p-3 dark:border-gray-700">
+                                        <input
+                                            type="search"
+                                            data-pos-salesperson-search
+                                            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                                            placeholder="{{ gettext('Buscar vendedor...') }}"
+                                            autocomplete="off"
+                                        >
                                     </div>
+                                    <div class="max-h-64 overflow-y-auto" data-pos-salesperson-results></div>
+                                </div>
+                                <div class="mt-2 flex items-center gap-2" data-pos-salesperson-selected style="display: none;">
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white truncate" data-pos-salesperson-name></span>
                                     <button
                                         type="button"
-                                        data-pos-work-order-clear
-                                        class="text-rose-500 hover:text-rose-600"
+                                        data-pos-salesperson-clear
+                                        class="text-rose-500 hover:text-rose-600 flex-shrink-0"
                                     >
                                         <i class="fa-solid fa-times"></i>
                                     </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Selección de cliente --}}
+                        <div>
+                            <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                {{ gettext('Cliente') }} <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative" data-pos-customer>
+                                <button
+                                    type="button"
+                                    data-pos-customer-trigger
+                                    class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white touch-manipulation"
+                                >
+                                    <span data-pos-customer-display class="truncate">{{ gettext('Seleccionar cliente...') }}</span>
+                                    <i class="fa-solid fa-chevron-down text-xs text-gray-400 ml-2 flex-shrink-0"></i>
+                                </button>
+                                <input type="hidden" data-pos-customer-id required>
+                                <div
+                                    class="absolute left-0 right-0 top-full z-50 mt-2 hidden max-h-96 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-slate-800"
+                                    data-pos-customer-dropdown
+                                >
+                                    <div class="border-b border-gray-200 p-3 dark:border-gray-700">
+                                        <input
+                                            type="search"
+                                            data-pos-customer-search
+                                            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                                            placeholder="{{ gettext('Buscar cliente...') }}"
+                                            autocomplete="off"
+                                        >
+                                    </div>
+                                    <div class="max-h-64 overflow-y-auto" data-pos-customer-results></div>
+                                </div>
+                                <div class="mt-2 flex items-center gap-2" data-pos-customer-selected style="display: none;">
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white truncate" data-pos-customer-name></span>
+                                    <button
+                                        type="button"
+                                        data-pos-customer-clear
+                                        class="text-rose-500 hover:text-rose-600 flex-shrink-0"
+                                    >
+                                        <i class="fa-solid fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Cargar orden de trabajo --}}
+                        <div>
+                            <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                {{ gettext('Orden de Trabajo') }} <span class="text-xs font-normal text-gray-400">(Opcional)</span>
+                            </label>
+                            <div class="relative" data-pos-work-order>
+                                <button
+                                    type="button"
+                                    data-pos-work-order-trigger
+                                    class="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white touch-manipulation"
+                                >
+                                    <span data-pos-work-order-display class="truncate">{{ gettext('Buscar orden...') }}</span>
+                                    <i class="fa-solid fa-chevron-down text-xs text-gray-400 ml-2 flex-shrink-0"></i>
+                                </button>
+                                <input type="hidden" data-pos-work-order-id>
+                                <div
+                                    class="absolute left-0 right-0 top-full z-50 mt-2 hidden max-h-96 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-slate-800"
+                                    data-pos-work-order-dropdown
+                                >
+                                    <div class="border-b border-gray-200 p-3 dark:border-gray-700">
+                                        <input
+                                            type="search"
+                                            data-pos-work-order-search
+                                            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                                            placeholder="{{ gettext('Buscar por número de orden...') }}"
+                                            autocomplete="off"
+                                        >
+                                    </div>
+                                    <div class="max-h-64 overflow-y-auto" data-pos-work-order-results></div>
+                                </div>
+                                <div class="mt-2 rounded-lg bg-primary/10 p-3" data-pos-work-order-selected style="display: none;">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate" data-pos-work-order-number></p>
+                                            <p class="text-xs text-gray-600 dark:text-gray-400 truncate" data-pos-work-order-customer></p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            data-pos-work-order-clear
+                                            class="text-rose-500 hover:text-rose-600 flex-shrink-0"
+                                        >
+                                            <i class="fa-solid fa-times"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -213,16 +216,6 @@
             {{-- Panel derecho - Carrito y Resumen --}}
             <div class="flex flex-col overflow-hidden">
                 <div class="flex h-full flex-col rounded-lg bg-white shadow-md dark:bg-slate-800">
-                    {{-- Header del carrito con gradiente --}}
-                    <div class="rounded-t-lg bg-gradient-to-r from-primary to-primary-strong p-5 text-white shadow-lg">
-                        <h2 class="mb-1 flex items-center gap-2 text-lg font-bold">
-                            <i class="fa-solid fa-shopping-cart"></i>
-                            {{ gettext('Carrito de Venta') }}
-                        </h2>
-                        <div class="text-xs opacity-90" data-pos-session-info>
-                            {{ gettext('Sesión activa') }}
-                        </div>
-                    </div>
                     
                     {{-- Lista de items del carrito --}}
                     <div class="flex-1 overflow-y-auto p-4" style="touch-action: pan-y; min-height: 200px;">
@@ -405,5 +398,6 @@
             </div>
         </div>
     </div>
+
 
 </x-layouts.dashboard-layout>

@@ -260,7 +260,7 @@ class QuotationController extends Controller
                     'item_type' => $item['item_type'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
-                    'subtotal' => $item['quantity'] * $item['unit_price'],
+                    // 'subtotal' is a generated column, calculated automatically by MySQL
                 ]);
                 $itemIds[] = $item['item_id'];
             }
@@ -382,7 +382,7 @@ class QuotationController extends Controller
                     'item_type' => $item['item_type'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
-                    'subtotal' => $item['quantity'] * $item['unit_price'],
+                    // 'subtotal' is a generated column, calculated automatically by MySQL
                 ]);
                 $itemIds[] = $item['item_id'];
             }

@@ -12,6 +12,8 @@ use App\Models\InvoiceItem;
 use App\Models\InvoicePayment;
 use App\Models\ItemPrice;
 use App\Models\PriceList;
+use App\Models\Income;
+use App\Models\IncomeType;
 use App\Models\ReceivableCategory;
 use App\Models\ReceivableEntry;
 use App\Models\Product;
@@ -427,6 +429,7 @@ class POSController extends Controller
             'payment_methods' => ['required', 'array', 'min:1'],
             'payment_methods.*.type' => ['required', 'string', 'in:EFECTIVO,TRANSFERENCIA,TARJETA'],
             'payment_methods.*.amount' => ['required', 'numeric', 'min:0'],
+            'payment_methods.*.reference' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:1000'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.item_id' => ['required', 'uuid'],
@@ -434,6 +437,19 @@ class POSController extends Controller
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_price' => ['required', 'numeric', 'min:0'],
         ]);
+
+        // Validar que reference sea requerido para TRANSFERENCIA y TARJETA
+        foreach ($validated['payment_methods'] as $index => $paymentMethod) {
+            if (in_array($paymentMethod['type'], ['TRANSFERENCIA', 'TARJETA']) && empty($paymentMethod['reference'])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => gettext('El número de referencia es requerido para ') . $paymentMethod['type'],
+                    'errors' => [
+                        "payment_methods.{$index}.reference" => [gettext('El número de referencia es requerido para este método de pago.')],
+                    ],
+                ], 422);
+            }
+        }
 
         try {
             DB::beginTransaction();
@@ -533,10 +549,32 @@ class POSController extends Controller
                         'payment_method_id' => $paymentMethod['type'],
                         'amount' => $paymentAmount,
                         'payment_date' => now(),
+                        'reference' => $paymentMethod['reference'] ?? null,
                         'status' => 'A',
                     ]);
                     $remainingToPay -= $paymentAmount;
                 }
+            }
+            
+            // Registrar automáticamente como ingreso
+            $incomeType = IncomeType::where('company_id', $companyId)
+                ->where('code', 'VENT')
+                ->where('status', 'A')
+                ->first();
+            
+            if ($incomeType) {
+                Income::create([
+                    'id' => (string) Str::uuid(),
+                    'company_id' => $companyId,
+                    'income_type_id' => $incomeType->id,
+                    'movement_date' => now(),
+                    'concept' => gettext('Venta desde POS: ') . $invoiceNumber,
+                    'description' => gettext('Venta registrada desde punto de venta') . ($validated['notes'] ? ' - ' . $validated['notes'] : ''),
+                    'amount_cents' => (int) ($totalAmount * 100),
+                    'currency_code' => 'USD',
+                    'reference' => $invoiceNumber,
+                    'status' => 'A',
+                ]);
             }
             
             // Si hay saldo pendiente, crear cuenta por cobrar
@@ -571,7 +609,7 @@ class POSController extends Controller
                     'item_type' => $item['item_type'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
-                    'subtotal' => $item['quantity'] * $item['unit_price'],
+                    // 'subtotal' is a generated column, calculated automatically by MySQL
                 ]);
             }
 

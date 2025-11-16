@@ -26,7 +26,7 @@ class TicketTable extends Component
      */
     public function render(): View
     {
-        return view('components.dashboard.TicketTable');
+        return view('components.dashboard.ticket-table');
     }
 }
 

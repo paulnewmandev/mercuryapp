@@ -1,45 +1,16 @@
-# Laravel Root .htaccess
-# Este archivo redirige todas las peticiones a la carpeta public
-# y protege archivos sensibles del proyecto
-
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    
-    # Si la carpeta public existe como subdirectorio, redirigir ahí
-    # Si tu dominio apunta directamente a public/, puedes comentar esto
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ public/$1 [L]
+# To prevent access to .env and other files
+<Files .*>
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+Order deny,allow
+Deny from all
 </IfModule>
-
-# Proteger archivos y carpetas sensibles
-<FilesMatch "^(\.env|\.git|composer\.(json|lock)|package\.(json|lock)|\.htaccess|README\.md|LICENSE|\.DS_Store|\.idea|\.vscode|\.editorconfig|\.php_cs|phpunit\.xml)">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# Denegar acceso a archivos de configuración
-<FilesMatch "^(\.env|\.env\.example|\.env\.local|\.env\.production|\.env\.staging)">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# Denegar acceso a carpetas del sistema
-RedirectMatch 403 ^/app/.*
-RedirectMatch 403 ^/bootstrap/.*
-RedirectMatch 403 ^/config/.*
-RedirectMatch 403 ^/database/.*
-RedirectMatch 403 ^/resources/.*
-RedirectMatch 403 ^/routes/.*
-RedirectMatch 403 ^/storage/.*
-RedirectMatch 403 ^/vendor/.*
-RedirectMatch 403 ^/node_modules/.*
-
-# Permitir acceso solo a public/
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{REQUEST_URI} ^/(app|bootstrap|config|database|resources|routes|storage|vendor|node_modules)/
-    RewriteRule ^ - [F,L]
+# Apache 2.4
+<IfModule mod_authz_core.c>
+Require all denied
 </IfModule>
+</Files>
 
+<IfModule mod_alias.c>
+RedirectMatch 301 ^/$ http://127.0.0.1:8000/public
+</IfModule>

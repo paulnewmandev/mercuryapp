@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('product_lines', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->string('name', 255);
@@ -29,7 +29,7 @@ return new class extends Migration
 
         Schema::create('product_categories', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('parent_id')->nullable();
@@ -44,7 +44,7 @@ return new class extends Migration
 
         Schema::create('service_categories', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('parent_id')->nullable();
@@ -59,7 +59,7 @@ return new class extends Migration
 
         Schema::create('services', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('category_id')->nullable();
@@ -76,7 +76,7 @@ return new class extends Migration
 
         Schema::create('price_lists', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->string('name', 100);
             $table->text('description')->nullable();
@@ -88,7 +88,7 @@ return new class extends Migration
 
         Schema::create('warehouses', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->string('name', 255);
@@ -102,7 +102,7 @@ return new class extends Migration
 
         Schema::create('products', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('product_line_id')->nullable();
@@ -128,7 +128,7 @@ return new class extends Migration
 
         Schema::create('item_prices', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('id')->primary();
             $table->uuid('item_id');
             $table->string('item_type', 20);
@@ -144,7 +144,7 @@ return new class extends Migration
 
         Schema::create('product_stock', function (Blueprint $table): void {
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->uuid('product_id');
             $table->uuid('warehouse_id');
             $table->unsignedInteger('quantity')->default(0);

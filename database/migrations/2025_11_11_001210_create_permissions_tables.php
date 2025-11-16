@@ -11,7 +11,7 @@ return new class extends Migration
         if (! Schema::hasTable('permissions')) {
             Schema::create('permissions', function (Blueprint $table): void {
                 $table->charset = 'utf8mb4';
-                $table->collation = 'utf8mb4_0900_ai_ci';
+                $table->collation = 'utf8mb4_unicode_ci';
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->nullable();
                 $table->string('name', 120);
@@ -33,7 +33,7 @@ return new class extends Migration
         if (! Schema::hasTable('permission_role')) {
             Schema::create('permission_role', function (Blueprint $table): void {
                 $table->charset = 'utf8mb4';
-                $table->collation = 'utf8mb4_0900_ai_ci';
+                $table->collation = 'utf8mb4_unicode_ci';
                 $table->uuid('role_id');
                 $table->uuid('permission_id');
                 $table->timestamps();

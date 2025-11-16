@@ -70,14 +70,17 @@ class InvoiceSeeder extends Seeder
                 ->whereIn('document_type', ['FACTURA', 'NOTA_DE_VENTA', 'COTIZACIONES'])
                 ->delete();
 
-            // Crear 10 facturas (usar contador inicial 0)
-            $this->createDocuments($company, $branches, $customers, $products, $services, $users, 'FACTURA', 10, 0);
+            // Crear 10 facturas
+            $this->createDocuments($company, $branches, $customers, $products, $services, $users, 'FACTURA', 10);
 
-            // Crear 10 notas de venta (usar contador inicial 1000 para evitar conflictos)
-            $this->createDocuments($company, $branches, $customers, $products, $services, $users, 'NOTA_DE_VENTA', 10, 1000);
+            // Crear 10 notas de venta (continuarán después de las facturas por sucursal)
+            $this->createDocuments($company, $branches, $customers, $products, $services, $users, 'NOTA_DE_VENTA', 10);
 
-            // Crear 10 cotizaciones (usar contador inicial 2000 para evitar conflictos)
-            $this->createDocuments($company, $branches, $customers, $products, $services, $users, 'COTIZACIONES', 10, 2000);
+            // Crear 10 cotizaciones
+            $this->createDocuments($company, $branches, $customers, $products, $services, $users, 'COTIZACIONES', 10);
+            
+            // Actualizar secuenciales al final
+            $this->updateSequences($company);
         }
     }
 
@@ -89,12 +92,64 @@ class InvoiceSeeder extends Seeder
         $services,
         $users,
         string $documentType,
-        int $count,
-        int $startSequence = 0
+        int $count
     ): void {
+        // Obtener o crear el secuencial para este tipo de documento
+        $sequence = \App\Models\DocumentSequence::query()
+            ->where('company_id', $company->id)
+            ->where('document_type', $documentType)
+            ->where('status', 'A')
+            ->first();
+
+        if (!$sequence) {
+            $sequence = new \App\Models\DocumentSequence();
+            $sequence->id = (string) Str::uuid();
+            $sequence->company_id = $company->id;
+            $sequence->name = match($documentType) {
+                'FACTURA' => 'Facturas',
+                'NOTA_DE_VENTA' => 'Notas de Venta',
+                'COTIZACIONES' => 'Cotizaciones',
+                default => 'Documentos',
+            };
+            $sequence->document_type = $documentType;
+            $sequence->establishment_code = '001';
+            $sequence->emission_point_code = '001';
+            $sequence->current_sequence = 0;
+            $sequence->status = 'A';
+            $sequence->save();
+        }
+
         // Distribuir documentos entre todas las sucursales de manera uniforme
         $branchCount = $branches->count();
         $documentsPerBranch = (int) ceil($count / $branchCount);
+        
+        // Contadores por sucursal para este tipo de documento
+        $branchCounters = [];
+        
+        // Inicializar contadores para todas las sucursales
+        foreach ($branches as $branch) {
+            if ($documentType === 'NOTA_DE_VENTA') {
+                // Para notas de venta, continuar después de las facturas en esta sucursal
+                $facturasEnBranch = Invoice::where('company_id', $company->id)
+                    ->where('branch_id', $branch->id)
+                    ->where('document_type', 'FACTURA')
+                    ->count();
+                $branchCounters[$branch->id] = $facturasEnBranch;
+            } elseif ($documentType === 'COTIZACIONES') {
+                // Para cotizaciones, continuar después de facturas y notas de venta
+                $facturasEnBranch = Invoice::where('company_id', $company->id)
+                    ->where('branch_id', $branch->id)
+                    ->where('document_type', 'FACTURA')
+                    ->count();
+                $notasEnBranch = Invoice::where('company_id', $company->id)
+                    ->where('branch_id', $branch->id)
+                    ->where('document_type', 'NOTA_DE_VENTA')
+                    ->count();
+                $branchCounters[$branch->id] = $facturasEnBranch + $notasEnBranch;
+            } else {
+                $branchCounters[$branch->id] = 0;
+            }
+        }
         
         $documentIndex = 0;
         foreach ($branches as $branchIndex => $branch) {
@@ -105,11 +160,12 @@ class InvoiceSeeder extends Seeder
                 $customer = $customers->random();
                 $salesperson = $users->isNotEmpty() ? $users->random() : null;
 
-                // Usar el índice del documento + startSequence como número de secuencia único
-                $sequenceNumber = $startSequence + $documentIndex + 1;
+                // Incrementar contador para esta sucursal
+                $branchCounters[$branch->id]++;
+                $sequenceNumber = $branchCounters[$branch->id];
                 
-                // Generar número de documento usando el código de la sucursal y el número de secuencia
-                $documentNumber = $this->generateDocumentNumber($company->id, $documentType, $branch->id, $sequenceNumber);
+                // Generar número de documento en formato correcto: 001-001-000000001
+                $documentNumber = $this->generateDocumentNumber($sequence, $sequenceNumber);
 
                 if (!$documentNumber) {
                     $this->command->warn("No se pudo generar número de documento para {$documentType}");
@@ -223,45 +279,60 @@ class InvoiceSeeder extends Seeder
         }
     }
 
-    private function generateDocumentNumber(string $companyId, string $documentType, ?string $branchId = null, int $branchCounter = 0): ?string
+    private function generateDocumentNumber(\App\Models\DocumentSequence $sequence, int $sequenceNumber): string
     {
-        // Obtener códigos de la sucursal si existe
-        $establishmentCode = '001';
-        $emissionPointCode = '001';
+        // Formato correcto: 001-001-000000001
+        // Primer grupo (001): establishment_code - número del establecimiento
+        // Segundo grupo (001): emission_point_code - número del facturero
+        // Tercer grupo (000000001): secuencial de 9 dígitos - número del documento
+        $establishmentCode = $sequence->establishment_code ?? '001';
+        $emissionPointCode = $sequence->emission_point_code ?? '001';
+        $sequentialNumber = str_pad((string) $sequenceNumber, 9, '0', STR_PAD_LEFT);
         
-        if ($branchId) {
-            $branch = \App\Models\Branch::find($branchId);
-            if ($branch && $branch->code) {
-                // Mapear códigos de sucursal a códigos numéricos
-                // 'MAT-QIT' -> '001', 'ESP-RIO' -> '002'
-                $branchCodeMap = [
-                    'MAT-QIT' => '001',
-                    'ESP-RIO' => '002',
-                ];
+        return sprintf('%s-%s-%s', $establishmentCode, $emissionPointCode, $sequentialNumber);
+    }
+
+    private function updateSequences(Company $company): void
+    {
+        // Actualizar secuenciales basándose en los números más altos usados por sucursal
+        $documentTypes = ['FACTURA', 'NOTA_DE_VENTA', 'COTIZACIONES'];
+        
+        foreach ($documentTypes as $documentType) {
+            $sequence = \App\Models\DocumentSequence::query()
+                ->where('company_id', $company->id)
+                ->where('document_type', $documentType)
+                ->where('status', 'A')
+                ->first();
+            
+            if (!$sequence) {
+                continue;
+            }
+            
+            // Obtener el número más alto usado por sucursal
+            $maxSequence = 0;
+            $branches = $company->branches()->where('status', 'A')->get();
+            
+            foreach ($branches as $branch) {
+                $invoices = Invoice::where('company_id', $company->id)
+                    ->where('branch_id', $branch->id)
+                    ->where('document_type', $documentType)
+                    ->get();
                 
-                if (isset($branchCodeMap[$branch->code])) {
-                    $establishmentCode = $branchCodeMap[$branch->code];
-                    $emissionPointCode = $branchCodeMap[$branch->code];
-                } else {
-                    // Si no está en el mapa, usar un hash del código de sucursal
-                    $branchHash = abs(crc32($branch->code)) % 999;
-                    $establishmentCode = str_pad((string)($branchHash + 1), 3, '0', STR_PAD_LEFT);
-                    $emissionPointCode = str_pad((string)($branchHash + 1), 3, '0', STR_PAD_LEFT);
+                foreach ($invoices as $invoice) {
+                    // Extraer el número secuencial del invoice_number (último grupo)
+                    if (preg_match('/-\d{9}$/', $invoice->invoice_number, $matches)) {
+                        $seqNum = (int) substr($matches[0], 1); // Remover el guion inicial
+                        $maxSequence = max($maxSequence, $seqNum);
+                    }
                 }
             }
+            
+            // Actualizar el secuencial al número más alto
+            if ($maxSequence > 0) {
+                $sequence->current_sequence = $maxSequence;
+                $sequence->save();
+            }
         }
-        
-        // Usar el contador de la sucursal como número de secuencia
-        // Esto asegura que cada sucursal tenga números únicos
-        $sequenceNumber = $branchCounter;
-        
-        return sprintf(
-            '%s-%s-%s-%06d',
-            $establishmentCode,
-            $emissionPointCode,
-            date('Y'),
-            $sequenceNumber
-        );
     }
 
     private function getProductPrice(string $productId, string $priceListId): float
