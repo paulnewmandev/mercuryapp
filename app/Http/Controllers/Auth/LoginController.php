@@ -32,7 +32,7 @@ class LoginController extends Controller
             'description' => 'Accede al panel de control profesional para talleres de reparación.',
         ])->toArray();
 
-        return view('Login', compact('meta'));
+        return view('login', compact('meta'));
     }
 }
 
