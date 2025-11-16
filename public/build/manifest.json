@@ -5,19 +5,19 @@
     "src": "node_modules/workbox-window/build/workbox-window.prod.es5.mjs",
     "isDynamicEntry": true
   },
-  "resources/Css/App.css": {
-    "file": "assets/App-CfeRPs8D.css",
-    "src": "resources/Css/App.css",
+  "resources/css/app.css": {
+    "file": "assets/app-DKxis71W.css",
+    "src": "resources/css/app.css",
     "isEntry": true,
-    "name": "App",
+    "name": "app",
     "names": [
-      "App.css"
+      "app.css"
     ]
   },
-  "resources/Js/App.js": {
-    "file": "assets/App-DGiSwsP3.js",
-    "name": "App",
-    "src": "resources/Js/App.js",
+  "resources/js/app.js": {
+    "file": "assets/app-DGiSwsP3.js",
+    "name": "app",
+    "src": "resources/js/app.js",
     "isEntry": true,
     "dynamicImports": [
       "node_modules/workbox-window/build/workbox-window.prod.es5.mjs"
