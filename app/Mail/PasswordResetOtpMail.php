@@ -33,7 +33,7 @@ class PasswordResetOtpMail extends Mailable
     public function build(): self
     {
         return $this->subject('Código de verificación - MercuryApp')
-            ->view('Emails.PasswordResetOtp')
+            ->view('emails.passwordresetotp')
             ->with([
                 'user_name' => $this->user->first_name . ' ' . $this->user->last_name,
                 'reset_code' => $this->code,

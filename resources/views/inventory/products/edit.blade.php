@@ -1,11 +1,11 @@
 <x-layouts.dashboard-layout :meta="$meta ?? []">
     <x-ui.breadcrumb
-        :title="gettext('Nuevo producto')"
+        :title="gettext('Editar producto')"
         :items="[
             ['label' => gettext('Panel principal'), 'url' => route('dashboard')],
             ['label' => gettext('Inventario'), 'url' => route('inventory.product_transfers.index')],
             ['label' => gettext('Productos'), 'url' => route('inventory.products.index')],
-            ['label' => gettext('Nuevo')],
+            ['label' => gettext('Editar')],
         ]"
     />
 
@@ -17,10 +17,10 @@
         <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
     @endpush
 
-    @include('Inventory.Products.partials.form-fields', [
-        'mode' => 'create',
-        'product' => null,
-        'productPayload' => null,
+    @?, [
+        'mode' => 'edit',
+        'product' => $product,
+        'productPayload' => $productPayload ?? null,
     ])
 </x-layouts.dashboard-layout>
 

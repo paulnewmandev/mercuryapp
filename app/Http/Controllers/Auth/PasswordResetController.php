@@ -26,7 +26,7 @@ class PasswordResetController extends Controller
      */
     public function showEmailForm(): View
     {
-        return view('Auth.Passwords.Forgot');
+        return view('auth.passwords.forgot');
     }
 
     /**
@@ -177,7 +177,7 @@ class PasswordResetController extends Controller
             return redirect()->route('password.request');
         }
 
-        return view('Auth.Passwords.Reset');
+        return view('auth.passwords.reset');
     }
 
     /**

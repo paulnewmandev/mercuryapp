@@ -41,7 +41,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     <title>{{ $normalizedMeta['title'] }}</title>
-    @vite(['resources/Css/App.css', 'resources/Js/App.js'])
+    @vite(['resources/css/App.css', 'resources/js/App.js'])
     @stack('styles')
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script>

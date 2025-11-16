@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/Css/App.css', 'resources/Js/App.js'],
+            input: ['resources/css/App.css', 'resources/js/App.js'],
             refresh: true,
         }),
         tailwindcss(),
